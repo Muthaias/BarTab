@@ -21,10 +21,11 @@ class BarTransactionConnector extends DataConnector
 		if($result)
 		{
 			$acc = $stmt->fetch();
-			$stmt->closeCursor();
+			
 			if($acc['account'] != null)
 				$account = $acc['account'];
 		}
+		$stmt->closeCursor();
 		return $account;
 	}
 	
@@ -175,6 +176,8 @@ class BarUserConnector extends DataConnector
 	
 	function get_user_by_name($name)
 	{
+		if(!$this->connected_or_error()) return FALSE;
+	
 		$stmt = $this->dbh->prepare('SELECT * FROM ' .$this->table_name. ' WHERE name=:name;');
 		$result = $stmt->execute(array('name'=>$name));
 		if($result)

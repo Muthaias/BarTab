@@ -58,7 +58,7 @@ class BarTabApplication
 		 */
 		$this->config = $config;
 		
-		$user = $this->user_connector->get_user($this->get_user_id());
+		$user = $this->get_user($this->get_user_id());
 		if($user != FALSE && $user->disabled != TRUE)
 			$this->config->user = $user;
 		else
@@ -80,6 +80,23 @@ class BarTabApplication
 			function () use($self)
 			{
 				$self->app->redirect('itemlist');
+			}
+		);
+		
+		$this->app->get(
+			'/setup',
+			function () use($self)
+			{
+				if($self->setup_db())
+				{
+					$self->add_success('Database setup successful.');
+				}
+				else
+				{
+					$self->add_error('Failed to setup database');
+				}
+				$self->setup_header('admin');
+				$self->setup_footer();
 			}
 		);
 	}
@@ -135,10 +152,99 @@ class BarTabApplication
 		return array('hash'=>md5($password . $salt), 'salt'=>$salt);
 	}
 	
+	public function setup_db()
+	{
+		if($this->dbh == NULL)
+		{
+			$this->add_error('Unable to connect to db.');
+			return FALSE;
+		}
+	
+		$stmt = $this->dbh->prepare('CREATE TABLE user (
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name VARCHAR(255) UNIQUE,
+	real_name VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin,
+	email VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin,
+	hash VARCHAR(2047) CHARACTER SET utf8 COLLATE utf8_bin,
+	salt VARCHAR(2047) CHARACTER SET utf8 COLLATE utf8_bin,
+	admin BOOLEAN,
+	disabled BOOLEAN NOT NULL
+);
+
+CREATE TABLE item (
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin,
+	description VARCHAR(1023) CHARACTER SET utf8 COLLATE utf8_bin,
+	price INT NOT NULL,
+	disabled BOOLEAN NOT NULL
+);
+
+CREATE TABLE transaction (
+	user_id INT NOT NULL,
+	value INT NOT NULL
+);
+
+CREATE TABLE purchase (
+	user_id INT NOT NULL,
+	item_id INT NOT NULL
+);');
+		$result = $stmt->execute();
+		if($result)
+		{
+			$stmt->closeCursor();
+			return $this->add_user('admin', 'Super Sexy Admin Guy', '', 'password', TRUE, FALSE);
+		}
+		return FALSE;
+	}
+	
 	public function add_user($name, $real_name, $email, $password, $admin = FALSE, $disabled = FALSE)
 	{
 		$pwd = $this->password_hash($password);
 		return $this->user_connector->add_user($name, $real_name, $email, $pwd['hash'], $pwd['salt'], $admin, $disabled);
+	}
+	
+	public function get_user($user_id)
+	{
+		$user = $this->config->user;
+		try
+		{
+			$tmp_user = $this->user_connector->get_user($user_id);
+			if($tmp_user != FALSE)
+				$user = $tmp_user;
+		}
+		catch(Exception $e)
+		{
+			$this->add_error($e->getMessage());
+		}
+		return $user;
+	}
+	
+	public function get_user_by_name($user_name)
+	{
+		$user = FALSE;
+		try
+		{
+			$user = $this->user_connector->get_user_by_name($user_name);
+		}
+		catch(Exception $e)
+		{
+			$this->add_error($e->getMessage());
+		}
+		return $user;
+	}
+	
+	public function get_user_purchases($user_id)
+	{
+		$list = array();
+		try
+		{
+			$list = $this->transaction_connector->list_purchases($user_id);
+		}
+		catch(Exception $e)
+		{
+			$this->add_error($e->getMessage());
+		}
+		return $list;
 	}
 	
 	public function get_item_list()
@@ -220,7 +326,7 @@ class BarTabApplication
 				$password = $app->request->post('password');
 				
 				$success = FALSE;
-				if($username != NULL && $password != NULL && ($user = $self->user_connector->get_user_by_name($username)))
+				if($username != NULL && $password != NULL && ($user = $self->get_user_by_name($username)))
 				{
 					$hash = $self->password_hash($password, $user->salt);
 					
@@ -436,7 +542,7 @@ class BarTabApplication
 			{
 				if(!$user->admin) $app->redirect('../signin');
 			
-				$cur_user = $self->user_connector->get_user($id);
+				$cur_user = $self->get_user($id);
 				$cur_user = !$cur_user ? new BarUser(0, NULL, NULL, NULL, NULL, NULL, NULL, FALSE, FALSE):$cur_user;
 				$self->setup_header('admin');
 				$user_list = $self->get_user_list();
@@ -530,7 +636,7 @@ class BarTabApplication
 			function () use ($app, $config, $user, $self)
 			{
 				$self->setup_header('userview');
-				$purchases = $self->transaction_connector->list_purchases($user->id);
+				$purchases = $self->get_user_purchases($user->id);
 				$app->render('userview.php', array('user'=>$user, 'purchases'=>$purchases));
 				$self->setup_footer();
 			}
@@ -548,7 +654,7 @@ class BarTabApplication
 			'/admin/transactions',
 			function () use ($app, $config, $user, $self)
 			{
-				if($user->id != 0)
+				if($user->admin)
 					$app->redirect('transactions/'.$user->id);
 				else
 					$app->redirect('signin');
@@ -561,13 +667,13 @@ class BarTabApplication
 			{
 				if(!$user->admin) $app->redirect('../signin');
 				
-				if($id == 0) $app->redirect('./' . $user->id);
+				if($id == 0 && $user->id != 0) $app->redirect('./' . $user->id);
 			
 				$self->setup_header('admin');
 				$user_list = $self->get_user_list();
-				$cur_user = $self->user_connector->get_user($id);
+				$cur_user = $self->get_user($id);
 				$cur_user = !$cur_user ? new BarUser(0, NULL, NULL, NULL, NULL, NULL, NULL, FALSE, FALSE):$cur_user;
-				$purchases = $self->transaction_connector->list_purchases($id);
+				$purchases = $self->get_user_purchases($id);
 				$app->render('userview.php', array('user'=>$cur_user, 'purchases'=>$purchases));
 				$app->render('usertransaction.php', array('user'=>$cur_user));
 				$app->render('itemviewlist.php', array('item_type'=>'user',
