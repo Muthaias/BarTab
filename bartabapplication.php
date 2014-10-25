@@ -173,7 +173,8 @@ class BarTabApplication
 	{
 		if($active_nav != NULL)
 		{
-			$this->app->render('header.php', array('conf'=>$this->config,
+			$this->app->render('header.php', array('conf'=>$this->config, 
+											'lang'=>$this->config->lang,
 											'nav'=>array($active_nav=>'active')));
 		}
 		else
@@ -187,7 +188,8 @@ class BarTabApplication
 	
 	public function setup_footer()
 	{
-		$this->app->render('footer.php', array('conf'=>$this->config));
+		$this->app->render('footer.php', array('conf'=>$this->config, 
+												'lang'=>$this->config->lang));
 	}
 	
 	/*
@@ -205,7 +207,7 @@ class BarTabApplication
 			function () use ($app, $config, $self)
 			{
 				$self->setup_header('admin');
-				$app->render('signinform.php', array('conf'=>$config));
+				$app->render('signinform.php');
 				$self->setup_footer();
 			}
 		);
@@ -224,18 +226,18 @@ class BarTabApplication
 					
 					if($user->disabled == FALSE && strcmp($hash['hash'], $user->hash) == 0)
 					{
-						$self->add_success(sprintf($config->signin_success_string, $user->name));
+						$self->add_success(sprintf($config->lang->signin_success_string, $user->name));
 						$self->set_user_id($user->id);
 						$success = TRUE;
 					}
 					else
 					{
-						$self->add_error($config->signin_error_string);
+						$self->add_error($config->lang->signin_error_string);
 					}
 				}
 				else
 				{
-					$self->add_error($config->signin_error_string);
+					$self->add_error($config->lang->signin_error_string);
 				}
 				
 				if($success)
@@ -260,10 +262,10 @@ class BarTabApplication
 				if($user->id != NULL)
 				{
 					$self->unset_user_id();
-					$self->add_success(sprintf($config->signout_success_string, $user->name));
+					$self->add_success(sprintf($config->lang->signout_success_string, $user->name));
 				}
 				else
-					$self->add_error($config->signout_error_string);
+					$self->add_error($config->lang->signout_error_string);
 				$app->redirect('../itemlist');
 			}
 		);
@@ -281,8 +283,8 @@ class BarTabApplication
 			{
 				$self->setup_header('itemlist');
 				$item_list = $self->get_item_list();
-				$app->render('itemlist.php', array('conf'=>$config, 
-												'list'=>$item_list));
+				$app->render('itemlist.php', array('list'=>$item_list, 
+												'lang'=>$config->lang));
 				$self->setup_footer();
 			}
 		);
@@ -318,10 +320,10 @@ class BarTabApplication
 				else
 					$item = new BarItem(0, '', '', 0, FALSE);
 				$self->setup_header('admin');
-				$app->render('itemedit.php', array('conf'=>$config, 'item'=>$item));
-				$app->render('itemeditlist.php', array('conf'=>$config, 'item_type'=>'glass',
-												'item_list_title_string'=>$config->item_list_title,
-												'new_item_string'=>$config->add_new_item_string,
+				$app->render('itemedit.php', array('item'=>$item));
+				$app->render('itemeditlist.php', array('item_type'=>'glass',
+												'item_list_title_string'=>$config->lang->item_list_title,
+												'new_item_string'=>$config->lang->add_new_item_string,
 												'list'=>$item_list, 'item'=>$item));
 				$self->setup_footer();
 			}
@@ -336,13 +338,13 @@ class BarTabApplication
 				if($id > 0)
 				{
 					if($self->item_connector->update_item($id, NULL, NULL, NULL, TRUE))
-						$self->add_success(sprintf($config->remove_item_success_string, $id));
+						$self->add_success(sprintf($config->lang->remove_item_success_string, $id));
 					else
-						$self->add_error(sprintf($config->remove_item_error_string, $id));
+						$self->add_error(sprintf($config->lang->remove_item_error_string, $id));
 				}
 				else
 				{
-					$self->add_error(sprintf($config->invalid_item_id_string, $id));
+					$self->add_error(sprintf($config->lang->invalid_item_id_string, $id));
 				}
 					
 				$app->redirect('../0');
@@ -373,17 +375,17 @@ class BarTabApplication
 				if($id != 0)
 				{
 					if($self->item_connector->update_item($id, $name, $price, $description, $disabled))
-						$self->add_success(sprintf($config->update_item_success_string, $id));
+						$self->add_success(sprintf($config->lang->update_item_success_string, $id));
 					else
-						$self->add_error(sprintf($config->update_item_error_string, $id));
+						$self->add_error(sprintf($config->lang->update_item_error_string, $id));
 				}
 				else if($id == 0 && $name != NULL && $price != NULL)
 				{
 					if(($id = $self->item_connector->add_item($name, $price, $description, $disabled)))
-						$self->add_success(sprintf($config->add_item_success_string, $id));
+						$self->add_success(sprintf($config->lang->add_item_success_string, $id));
 					else
 					{
-						$self->add_error($config->add_item_error_string);
+						$self->add_error($config->lang->add_item_error_string);
 						$id = 0;
 					}
 				}
@@ -404,8 +406,7 @@ class BarTabApplication
 			{
 				$self->setup_header('userlist');
 				$user_list = $self->get_user_list();
-				$app->render('userlist.php', array('conf'=>$config,
-											'list'=>$user_list));
+				$app->render('userlist.php', array('list'=>$user_list));
 				$self->setup_footer();
 			}
 		);
@@ -439,10 +440,10 @@ class BarTabApplication
 				$cur_user = !$cur_user ? new BarUser(0, NULL, NULL, NULL, NULL, NULL, NULL, FALSE, FALSE):$cur_user;
 				$self->setup_header('admin');
 				$user_list = $self->get_user_list();
-				$app->render('useredit.php', array('conf'=>$config, 'user'=>$cur_user));
-				$app->render('itemeditlist.php', array('conf'=>$config, 'item_type'=>'user',
-												'item_list_title_string'=>$config->user_list_title,
-												'new_item_string'=>$config->add_new_user_string,
+				$app->render('useredit.php', array('user'=>$cur_user));
+				$app->render('itemeditlist.php', array('item_type'=>'user',
+												'item_list_title_string'=>$config->lang->user_list_title,
+												'new_item_string'=>$config->lang->add_new_user_string,
 												'list'=>$user_list, 'item'=>$cur_user));
 				$self->setup_footer();
 			}
@@ -458,13 +459,13 @@ class BarTabApplication
 				if($id > 0 && $cur_user)
 				{
 					if($self->user_connector->update_user($id, NULL, NULL, NULL, NULL, NULL, NULL, TRUE))
-						$self->add_success(sprintf($config->remove_user_success_string, $cur_user->name));
+						$self->add_success(sprintf($config->lang->remove_user_success_string, $cur_user->name));
 					else
-						$self->add_error(sprintf($config->remove_user_error_string, $cur_user->name));
+						$self->add_error(sprintf($config->lang->remove_user_error_string, $cur_user->name));
 				}
 				else
 				{
-					$self->add_error(sprintf($config->invalid_user_id_string, $id));
+					$self->add_error(sprintf($config->lang->invalid_user_id_string, $id));
 				}
 					
 				$app->redirect('../0');
@@ -489,18 +490,18 @@ class BarTabApplication
 				$admin = ($admin == NULL) ? FALSE : TRUE;
 				
 				if($id == 0 && $name == NULL)
-					$self->add_error($config->username_error_string);
+					$self->add_error($config->lang->username_error_string);
 				if($id == 0 && $email == NULL)
-					$self->add_error($config->email_error_string);
+					$self->add_error($config->lang->email_error_string);
 				if($id == 0 && $password == NULL)
-					$self->add_error($config->password_error_string);
+					$self->add_error($config->lang->password_error_string);
 					
 				if($id == 0 && $name != NULL && $email != NULL && $password != NULL)
 				{
 					if($self->add_user($name, $real_name, $email, $password, $admin, $disabled))
-						$self->add_success(sprintf($config->add_user_success_string, $name));
+						$self->add_success(sprintf($config->lang->add_user_success_string, $name));
 					else
-						$self->add_error($config->add_user_error_string);
+						$self->add_error($config->lang->add_user_error_string);
 				}
 				else if($id != 0)
 				{
@@ -508,9 +509,9 @@ class BarTabApplication
 					if($password != NULL)
 						$hash = $self->password_hash($password);
 					if($self->user_connector->update_user($id, $name, $real_name, $email, $hash['hash'], $hash['salt'], $admin, $disabled))
-						$self->add_success(sprintf($config->update_user_success_string, $name));
+						$self->add_success(sprintf($config->lang->update_user_success_string, $name));
 					else
-						$self->add_error(sprintf($config->update_user_error_string, $name));
+						$self->add_error(sprintf($config->lang->update_user_error_string, $name));
 				}
 				$app->redirect(''.$id);
 			}
@@ -530,8 +531,7 @@ class BarTabApplication
 			{
 				$self->setup_header('userview');
 				$purchases = $self->transaction_connector->list_purchases($user->id);
-				$app->render('userview.php', array('conf'=>$config,
-											'user'=>$user, 'purchases'=>$purchases));
+				$app->render('userview.php', array('user'=>$user, 'purchases'=>$purchases));
 				$self->setup_footer();
 			}
 		);
@@ -568,13 +568,11 @@ class BarTabApplication
 				$cur_user = $self->user_connector->get_user($id);
 				$cur_user = !$cur_user ? new BarUser(0, NULL, NULL, NULL, NULL, NULL, NULL, FALSE, FALSE):$cur_user;
 				$purchases = $self->transaction_connector->list_purchases($id);
-				$app->render('userview.php', array('conf'=>$config,
-											'user'=>$cur_user, 'purchases'=>$purchases));
-				$app->render('usertransaction.php', array('conf'=>$config,
-											'user'=>$user));
-				$app->render('itemviewlist.php', array('conf'=>$config, 'item_type'=>'user',
-												'item_list_title_string'=>$config->user_list_title,
-												'new_item_string'=>$config->add_new_user_string,
+				$app->render('userview.php', array('user'=>$cur_user, 'purchases'=>$purchases));
+				$app->render('usertransaction.php', array('user'=>$cur_user));
+				$app->render('itemviewlist.php', array('item_type'=>'user',
+												'item_list_title_string'=>$config->lang->user_list_title,
+												'new_item_string'=>$config->lang->add_new_user_string,
 												'list'=>$user_list, 'item'=>$cur_user,
 												'has_create_item'=>FALSE));
 				$self->setup_footer();
@@ -596,17 +594,17 @@ class BarTabApplication
 				if($amount != NULL && intval($amount) != 0 && $id != 0)
 				{
 					if($self->transaction_connector->make_transaction($id, intval($amount)))
-						$self->add_success(sprintf($config->transaction_success_string, intval($amount), $config->currency_string));
+						$self->add_success(sprintf($config->lang->transaction_success_string, intval($amount), $config->lang->currency_string));
 					else
-						$self->add_error($config->transaction_error_string);
+						$self->add_error($config->lang->transaction_error_string);
 				}
 				else if(intval($amount) == 0)
 				{
-					$self->add_error($config->zero_value_transaction_error_string);
+					$self->add_error($config->lang->zero_value_transaction_error_string);
 				}
 				else
 				{
-					$self->add_error($config->transaction_error_string);
+					$self->add_error($config->lang->transaction_error_string);
 				}
 				
 				$app->redirect(''.$id);
@@ -630,16 +628,16 @@ class BarTabApplication
 					if($user->account > $config->max_debt)
 					{
 						if($self->transaction_connector->make_purchase($user->id, $item))
-							$self->add_success(sprintf($config->purchase_success_string, $item));
+							$self->add_success(sprintf($config->lang->purchase_success_string, $item));
 						else
-							$self->add_error(sprintf($config->item_nexist_error_string, $item));
+							$self->add_error(sprintf($config->lang->item_nexist_error_string, $item));
 					}
 					else
-						$self->add_error(sprintf($config->max_debt_error_string, $config->max_debt));
+						$self->add_error(sprintf($config->lang->max_debt_error_string, $config->max_debt));
 				}
 				else
 				{
-					$self->add_error($config->purchase_auth_error_string);
+					$self->add_error($config->lang->purchase_auth_error_string);
 				}
 				
 				$app->redirect('../itemlist');

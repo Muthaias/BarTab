@@ -4,7 +4,7 @@
  *  The available language configurations are create_swedish, create_english and 
  *  create_german. Sorry for the poor german translation :P
  */
-$config = BarTabConfiguration::create_english();
+$config = new BarTabConfiguration();
 
 /*
  * Default user configuration
@@ -14,6 +14,7 @@ $config = BarTabConfiguration::create_english();
  */
 $base_user = new BarUser(0, 'anonymous', 'Anonymous', '', '', '', '', FALSE, FALSE);
 $config->user = $base_user;
+$config->lang = BarTabLanguage::create_english();
 
 /*
  * Database configuration
