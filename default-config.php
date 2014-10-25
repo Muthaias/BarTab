@@ -1,5 +1,14 @@
 <?php
 /*
+ * ----------------------------------------------------------------------------
+ * "THE BEER-WARE LICENSE" (Revision 42):
+ * <me@cp0la.se> wrote this file.  As long as you retain this notice you
+ * can do whatever you want with this stuff. If we meet some day, and you think
+ * this stuff is worth it, you can buy me a beer in return.   Mattias Nyberg
+ * ----------------------------------------------------------------------------
+ */
+
+/*
  * Language configuration
  *  The available language configurations are create_swedish, create_english and 
  *  create_german. Sorry for the poor german translation :P
