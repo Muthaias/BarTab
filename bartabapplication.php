@@ -74,6 +74,9 @@ class BarTabApplication
 		else
 			$this->unset_user_id();
 		
+		/*
+		 * Setup configurable and non configurable pages
+		 */
 		if($config->enable_item_list) $this->setup_item_list();
 		if($config->enable_item_edit) $this->setup_item_edit();
 		if($config->enable_user_list) $this->setup_user_list();
@@ -81,32 +84,20 @@ class BarTabApplication
 		if($config->enable_user_view) $this->setup_user_view();
 		if($config->enable_purchase) $this->setup_purchase();
 		if($config->enable_user_transactions) $this->setup_user_transaction();
+		if($config->enable_db_setup) $this->setup_db_setup();
 		$this->setup_signin();
 		$this->setup_signout();
 		
+		/*
+		 * Setup default page
+		 * TODO: Make default page configurable.
+		 */
 		$self = $this;
 		$this->app->get(
 			'/',
 			function () use($self)
 			{
 				$self->app->redirect('itemlist');
-			}
-		);
-		
-		$this->app->get(
-			'/setup',
-			function () use($self)
-			{
-				if($self->setup_db())
-				{
-					$self->add_success('Database setup successful.');
-				}
-				else
-				{
-					$self->add_error('Failed to setup database');
-				}
-				$self->setup_header('admin');
-				$self->setup_footer();
 			}
 		);
 	}
@@ -311,6 +302,30 @@ CREATE TABLE purchase (
 	/*
 	 * Page setups
 	 */
+	 
+	protected function setup_db_setup()
+	{
+		$app = $this->app;
+		$config = $this->config;
+		$self = $this;
+		
+		$this->app->get(
+			'/setup',
+			function () use($self)
+			{
+				if($self->setup_db())
+				{
+					$self->add_success('Database setup successful.');
+				}
+				else
+				{
+					$self->add_error('Failed to setup database');
+				}
+				$self->setup_header('admin');
+				$self->setup_footer();
+			}
+		);
+	}
 	
 	protected function setup_signin()
 	{

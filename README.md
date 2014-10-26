@@ -1,7 +1,9 @@
 BarTab
 ======
 
-A simple bar tab for your web browser using Bootstrap and PHP.
+A simple bar tab for your web browser using Bootstrap and PHP. The BarTab specific code is licensed under the Beer license while both Slim framework and Bootstrap are licensed under the MIT license.
+
+If you use BarTab in any shape or form, please feel free and encouraged to share your feedback.
 
 
 External libraries
@@ -19,4 +21,5 @@ Setup
 4. Run your application at with path www.yoursite.url/setup
 5. Use the default user with username: 'admin' and password: 'password'.
 6. Setup other users and reconfigure the default user.
-7. Enjoy your BarTab.
+7. Set enable_db_setup in configuration file.
+8. Enjoy your BarTab.

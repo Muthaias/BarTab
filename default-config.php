@@ -24,6 +24,7 @@ $config = new BarTabConfiguration();
 $base_user = new BarUser(0, 'anonymous', 'Anonymous', '', '', '', '', FALSE, FALSE);
 $config->user = $base_user;
 $config->lang = BarTabLanguage::create_english();
+$config->enable_db_setup = TRUE;
 
 /*
  * Database configuration

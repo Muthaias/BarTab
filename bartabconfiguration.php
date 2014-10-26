@@ -21,12 +21,6 @@ class BarTabConfiguration
 	public $data_url = '';
 	public $base_url = '';
 	
-	public function get_data_url($sub)
-	{return $this->data_url . $sub;}
-	
-	public function get_base_url($sub)
-	{return $this->base_url . $sub;}
-	
 	// Database config
 	public $db_host;
 	public $db_name;
@@ -43,8 +37,15 @@ class BarTabConfiguration
 	public $enable_item_edit = TRUE;
 	public $enable_purchase = TRUE;
 	public $enable_user_transactions = TRUE;
+	public $enable_db_setup = FALSE;
 	
 	public $lang;
+	
+	public function get_data_url($sub)
+	{return $this->data_url . $sub;}
+	
+	public function get_base_url($sub)
+	{return $this->base_url . $sub;}
 	
 	public function __construct()
 	{
