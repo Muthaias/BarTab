@@ -69,15 +69,15 @@ class DataConnector
 	{
 		if(!$this->connected_or_error()) return FALSE;
 	
-		$disabled_string = $get_disabled ? '' : ' WHERE disabled=FALSE';
+		$disabled_string = $get_disabled ? '' : ' AND disabled=FALSE';
 		$select_string = is_array($values) ? implode(',', $values) : $values;
-		$stmt = $this->dbh->prepare('SELECT' .$select_string. ' FROM ' .$this->table_name. ' WHERE id=:id' .$disabled_string);
+		$stmt = $this->dbh->prepare('SELECT ' .$select_string. ' FROM ' .$this->table_name. ' WHERE id=:id' .$disabled_string);
 		$result = $stmt->execute(array('id'=>$id));
 		if($result)
 		{
-			$news = $stmt->fetch();
+			$item = $stmt->fetch();
 			$stmt->closeCursor();
-			return $news;
+			return $item;
 		}
 		return FALSE;
 	}

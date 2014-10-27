@@ -206,7 +206,7 @@ CREATE TABLE purchase (
 	
 	public function get_user($user_id)
 	{
-		$user = $this->config->user;
+		$user = FALSE;
 		try
 		{
 			$tmp_user = $this->user_connector->get_user($user_id);
@@ -278,6 +278,7 @@ CREATE TABLE purchase (
 
 	public function setup_header($active_nav = NULL)
 	{
+		$this->app->response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
 		if($active_nav != NULL)
 		{
 			$this->app->render('header.php', array('conf'=>$this->config, 
