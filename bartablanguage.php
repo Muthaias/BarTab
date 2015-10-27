@@ -294,6 +294,75 @@ class BarTabLanguage
 		$this->transaction_success_string = 'Transaktion der betrag %d %s gelungen.';
 		$this->transaction_error_string = 'Transaktion fehlgeschlagen.';
 	}
+	public function set_spanish()
+	{
+		$this->purchase_string = 'Comprar por';
+		$this->currency_string = 'B';
+		$this->username_string = 'Nombre de usuario';
+		$this->user_purchases_string = 'Usuario compra';
+		$this->name_string = 'Nombre';
+		$this->disabled_string = 'Deshabilitado';
+		$this->price_string = 'Precio';
+		$this->password_string = 'Contraseña';
+		$this->submit_string = 'Enviar';
+		$this->email_string = 'E-mail';
+		$this->account_string = 'Balance de cuenta';
+		$this->admin_string = 'Admin';
+		$this->user_string = 'Usuario';
+		$this->update_user_string = 'Modificar usuario';
+		$this->update_item_string = 'Modificar artículo';
+		$this->info_string = 'Información';
+		$this->real_name_string = 'Nombre real';
+		$this->description_string = 'Descripción';
+		$this->add_new_item_string = 'Agregar nuevo artículo';
+		$this->add_new_user_string = 'Agregar nuevo usuario';
+		$this->users_string = 'Usuarios';
+		$this->items_string = 'Elementos';
+		$this->signin_string = 'Ingresar';
+		$this->signout_string = 'Salir';
+		$this->transaction_string = 'Transacción';
+		$this->amount_string = 'Monto';
+		
+		// Title setup
+		$this->title = 'Bar tab';
+		$this->item_list_title = 'Lista de precios';
+		$this->user_list_title = 'Lista de usuario';
+		$this->update_user_title = 'Modificar usuario';
+		$this->update_item_title = 'Modificar artículo';
+		$this->user_view_title = 'Mostrar usuario';
+		
+		// Messages
+		$this->username_error_string = 'El nombre de usuario no ha sido ingresado.';
+		$this->email_error_string = 'El Email no ha sido ingresado.';
+		$this->password_error_string = 'La contraseña no ha sido ingresada.';
+		$this->add_user_error_string = 'No ha sido posible agregar un usuario.';
+		$this->max_debt_error_string = 'No se pudo comprar el elemento. Máximo de deuda %d alcanzada para la cuenta.';
+		$this->purchase_auth_error_string = 'No se pudo comprar el artículo. El usuario no tiene los permisos.';
+		$this->item_nexist_error_string = 'El artículo con el identificador %d no existe.';
+		$this->add_user_success_string = 'Usuario añadido con éxito: %s';
+		$this->purchase_success_string = 'Artículo con identificador %d comprado con éxito.';
+		$this->update_user_success_string = 'Usuario %s modificado con éxito.';
+		$this->update_user_error_string = 'La modificación del usuario %s ha fallado .';
+		$this->remove_user_success_string = 'Usuario %s eliminado con éxito.';
+		$this->remove_user_error_string = 'La eliminación del usuario %s ha fallado .';
+		$this->invalid_user_id_string = 'Usuario con el identificador %d inválido.';
+		
+		$this->remove_item_success_string = 'Artículo %d eliminado con éxito.';
+		$this->remove_item_error_string = 'La eliminación del artículo %d ha fallado.';
+		$this->invalid_item_id_string = 'Identificador del artículo inválido %d.';
+		$this->update_item_success_string = 'Artículo %d modificado con éxito.';
+		$this->update_item_error_string = 'La modificación del artículo %d ha fallado.';
+		$this->add_item_success_string = 'Artículo %d añadido con éxito.';
+		$this->add_item_error_string = 'Error al agregar artículo.';
+		
+		$this->signin_success_string = 'Te has identificado con éxito. Bienvenid@, %s.';
+		$this->signin_error_string = 'Nombre de usuario o contraseña inválida.';
+		$this->signout_success_string = '%s te has salido del sistema con éxito %s.';
+		$this->signout_error_string = 'No hay usuario para poder salirse.';
+		$this->zero_value_transaction_error_string = 'No se puede realizar una transacción con valor cero.';
+		$this->transaction_success_string = 'Transacción del monto %d %s realizada con éxito.';
+		$this->transaction_error_string = 'Transacción fallida.';
+	}
 	
 	public static function create_swedish()
 	{
@@ -313,6 +382,12 @@ class BarTabLanguage
 	{
 		$lang = new BarTabLanguage();
 		$lang->set_german();
+		return $lang;
+	}
+		public static function create_spanish()
+	{
+		$lang = new BarTabLanguage();
+		$lang->set_spanish();
 		return $lang;
 	}
 };
