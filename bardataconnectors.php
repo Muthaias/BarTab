@@ -198,7 +198,7 @@ class BarUserConnector extends DataConnector
 			if($u['id'] == NULL)
 				return FALSE;
 			
-			return new BarUser($u['id'], $u['name'], $u['real_name'], $u['email'], 0, $u['hash'], $u['salt'], $u['admin'], $u['disabled']);
+			return new BarUser($u['id'], $u['name'], $u['real_name'], $u['email'], 0, base64_decode($u['hash']), base64_decode($u['salt']), $u['admin'], $u['disabled']);
 		}
 		return FALSE;
 	}
@@ -209,7 +209,7 @@ class BarUserConnector extends DataConnector
 		if($u)
 		{
 			$account = $this->transactions->sum_account($id);
-			return new BarUser($u['id'], $u['name'], $u['real_name'], $u['email'], $account, $u['hash'], $u['salt'], $u['admin'], $u['disabled']);
+			return new BarUser($u['id'], $u['name'], $u['real_name'], $u['email'], $account, base64_decode($u['hash']), base64_decode($u['salt']), $u['admin'], $u['disabled']);
 		}
 		return FALSE;
 	}
@@ -242,8 +242,8 @@ class BarUserConnector extends DataConnector
 		$data['name'] = $name;
 		$data['real_name'] = $real_name;
 		$data['email'] = $email;
-		$data['hash'] = $hash;
-		$data['salt'] = $salt;
+		$data['hash'] = base64_encode($hash);
+		$data['salt'] = base64_encode($salt);
 		$data['admin'] = $admin;
 		$data['disabled'] = $disabled;
 		return $data;
