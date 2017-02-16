@@ -8,5 +8,6 @@ RewriteEngine On
 
 <IfModule mod_rewrite.c>
 RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteBase /
 RewriteRule ^ index.php [QSA,L,E=Cache-Control:no-cache]
 </IfModule>
