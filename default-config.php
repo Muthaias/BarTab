@@ -23,7 +23,7 @@ $config = new BarTabConfiguration();
  */
 $base_user = new BarUser(0, 'anonymous', 'Anonymous', '', '', '', '', FALSE, FALSE);
 $config->user = $base_user;
-$config->lang = BarTabLanguage::create_english();
+$config->lang = BarTabLanguage::load_language('lang/en.json');
 $config->enable_db_setup = TRUE;
 
 /*
